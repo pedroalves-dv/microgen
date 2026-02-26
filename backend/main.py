@@ -23,7 +23,8 @@ if API_KEY:
 app = FastAPI(title="SEO Brief Generator")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://microgen.vercel.app/"],
+    allow_origins=["http://localhost:3000", 
+                   "https://microgen.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
