@@ -17,7 +17,7 @@ export default function Home() {
     setArticle(null)
 
     try {
-      const res = await fetch('http://localhost:8000/api/brief', {
+      const res = await fetch('https://microgen-i6v9.onrender.com/api/brief', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ keyword }),
@@ -38,7 +38,7 @@ export default function Home() {
     setArticle(null)
 
     try {
-      const res = await fetch('http://localhost:8000/api/article', {
+      const res = await fetch('https://microgen-i6v9.onrender.com/api/article', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ keyword, brief }),
