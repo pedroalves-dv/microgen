@@ -16,6 +16,25 @@ python3 -m pip install -r backend/requirements.txt
 uvicorn backend.main:app --reload --port 8000
 ```
 
+cd /home/sang/projects/microgen/backend
+
+# Create and activate the venv
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the server
+uvicorn main:app --reload
+
+Next time you come back, you only need to re-activate it (the install step is one-time):
+
+
+cd /home/sang/projects/microgen/backend
+source venv/bin/activate
+uvicorn main:app --reload
+
 2) Frontend
 
 ```bash

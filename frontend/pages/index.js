@@ -1,312 +1,774 @@
-import { useState } from 'react';
-import ReactMarkdown from 'react-markdown'
+import { useState } from "react";
+import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+
+const API = "https://microgen-i6v9.onrender.com";
 
 export default function Home() {
-  const [keyword, setKeyword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [generating, setGenerating] = useState(false)
-  const [brief, setBrief] = useState(null)
-  const [article, setArticle] = useState(null)
-  const [error, setError] = useState(null)
+  const [keyword, setKeyword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [brief, setBrief] = useState(null);
+  const [article, setArticle] = useState(null);
+  const [error, setError] = useState(null);
 
   async function handleSubmit(e) {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    setBrief(null)
-    setArticle(null)
-
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setBrief(null);
+    setArticle(null);
     try {
-      const res = await fetch('https://microgen-i6v9.onrender.com/api/brief', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`${API}/api/brief`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ keyword }),
-      })
-      if (!res.ok) throw new Error(await res.text())
-      const data = await res.json()
-      setBrief(data)
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setBrief(await res.json());
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function handleGenerateArticle() {
-    setGenerating(true)
-    setError(null)
-    setArticle(null)
-
+    setGenerating(true);
+    setError(null);
+    setArticle(null);
     try {
-      const res = await fetch('https://microgen-i6v9.onrender.com/api/article', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`${API}/api/article`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ keyword, brief }),
-      })
-      if (!res.ok) throw new Error(await res.text())
-      const data = await res.json()
-      setArticle(data.article)
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      setArticle(data.article);
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setGenerating(false)
+      setGenerating(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div
+      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+    >
       <Header />
 
-      <main className="flex-1 flex items-start justify-center px-4 py-10">
-        <div className="w-full max-w-3xl space-y-4">
+      <main style={{ flex: 1, padding: "40px 32px 80px" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto" }}>
+          {/* Prompt input */}
+          <form onSubmit={handleSubmit}>
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                alignItems: "center",
+                padding: 14,
+                background: "var(--paper)",
+                border: "1px solid var(--line)",
+                borderRadius: 12,
+                boxShadow:
+                  "0 1px 0 rgba(0,0,0,0.02), 0 16px 40px -24px rgba(0,0,0,0.12)",
+              }}
+            >
+              <span
+                className="mono"
+                style={{ color: "var(--accent)", fontSize: 16 }}
+              >
+                ›
+              </span>
+              <input
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="cozy modular lamps"
+                required
+                style={{
+                  flex: 1,
+                  border: "none",
+                  outline: "none",
+                  background: "transparent",
+                  fontSize: 17,
+                  color: "var(--ink)",
+                  letterSpacing: "-0.01em",
+                  fontFamily: "inherit",
+                }}
+              />
+              <button
+                disabled={loading}
+                style={{
+                  background: "var(--ink)",
+                  color: "var(--bg)",
+                  border: "none",
+                  padding: "10px 18px",
+                  borderRadius: 8,
+                  fontSize: 13.5,
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  letterSpacing: "-0.01em",
+                  opacity: loading ? 0.5 : 1,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                {loading ? (
+                  <>
+                    <Spinner /> Generating…
+                  </>
+                ) : (
+                  "Generate →"
+                )}
+              </button>
+            </div>
+            <div
+              className="mono"
+              style={{
+                marginTop: 12,
+                fontSize: 11.5,
+                color: "var(--mute)",
+                display: "flex",
+                gap: 22,
+              }}
+            >
+              <span>~6s to brief</span>
+              <span>~40s to draft</span>
+              <span>Gemini 2.5</span>
+            </div>
+          </form>
 
-          {/* Title */}
-          <div className="mb-4">
-            <h1 className="text-xl font-mono font-semibold text-gray-900 tracking-tighter">Content Brief Generator</h1>
-            <p className="text-xs font-mono text-gray-500 mt-0.5 tracking-tight">Enter keywords to generate SEO strategy in seconds</p>
-          </div>
-
-          {/* Input */}
-          {/* <div className="bg-white rounded border border-gray-200 p-4 shadow-sm"> */}
-            <form onSubmit={handleSubmit}>
-              {/* <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase font-sans tracking-wide">Keywords</label> */}
-              <div className="flex gap-2">
-                <input
-                  className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent font-mono"
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  placeholder="e.g., best running shoes for flat feet"
-                  required
-                />
-                <button
-                  className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded text-xs font-medium disabled:opacity-50 transition-colors font-mono"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <span className="inline-flex items-center gap-2">
-                      <Spinner className="h-3 w-3 text-white" />
-                      Generating…
-                    </span>
-                  ) : (
-                    'Generate'
-                  )}
-                </button>
+          {/* Empty state — when nothing yet */}
+          {!brief && !loading && !error && (
+            <div style={{ marginTop: 96 }}>
+              <div
+                className="mono"
+                style={{
+                  fontSize: 11,
+                  color: "var(--mute)",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  marginBottom: 28,
+                }}
+              >
+                SEO content engine
               </div>
-            </form>
-          {/* </div> */}
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: 84,
+                  lineHeight: 0.94,
+                  letterSpacing: "-0.05em",
+                  fontWeight: 400,
+                  color: "var(--ink)",
+                }}
+              >
+                One keyword.
+                <br />
+                <span className="serif" style={{ fontStyle: "italic" }}>
+                  A finished article.
+                </span>
+              </h1>
+              <p
+                style={{
+                  marginTop: 28,
+                  fontSize: 18,
+                  color: "var(--ink-2)",
+                  lineHeight: 1.55,
+                  letterSpacing: "-0.005em",
+                  maxWidth: 560,
+                }}
+              >
+                Microgen turns a single search phrase into a publish-ready brief
+                — title, meta, H2s, gaps, internal links — and writes the full
+                draft on top of it.
+              </p>
+            </div>
+          )}
 
+          {/* Loading state */}
+          {loading && (
+            <div
+              style={{
+                marginTop: 64,
+                textAlign: "center",
+                color: "var(--mute)",
+              }}
+            >
+              <div
+                className="mono"
+                style={{
+                  fontSize: 12,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Drafting your brief
+              </div>
+              <p
+                className="serif"
+                style={{
+                  margin: "14px auto 0",
+                  fontSize: 24,
+                  fontStyle: "italic",
+                  color: "var(--ink)",
+                  maxWidth: 480,
+                  lineHeight: 1.35,
+                }}
+              >
+                Searching intent signals, mapping out an outline, and finding
+                the angles other articles missed.
+              </p>
+            </div>
+          )}
+
+          {/* Error */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded p-3 text-xs font-mono">
-            {error}
-          </div>
+            <div
+              style={{
+                marginTop: 24,
+                padding: "14px 16px",
+                background: "var(--paper)",
+                border: "1px solid var(--accent)",
+                borderRadius: 10,
+                color: "var(--ink)",
+                fontSize: 13.5,
+                lineHeight: 1.5,
+              }}
+            >
+              <div
+                className="mono"
+                style={{
+                  fontSize: 11,
+                  color: "var(--accent)",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  marginBottom: 4,
+                }}
+              >
+                Something went wrong
+              </div>
+              {error}
+            </div>
           )}
 
-          {/* Brief Output */}
+          {/* Brief */}
           {brief && (
-            <div className="bg-white rounded border border-gray-200 shadow-sm  relative">
-              <CopyButton text={JSON.stringify(brief, null, 2)} />
-              {/* Top meta row */}
-              <div className="flex flex-wrap gap-2 p-4 border-b border-gray-100">
-                {brief.search_intent && (
-                  <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs font-mono px-2 py-1 rounded">
-                    Intent: {brief.search_intent}
-                  </span>
-                )}
-                {brief.word_count && (
-                  <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-mono px-2 py-1 rounded">
-                    ~{brief.word_count} words
-                  </span>
-                )}
-                {brief.tone && (
-                  <span className="inline-flex items-center gap-1 bg-purple-50 text-purple-700 text-xs font-mono px-2 py-1 rounded">
-                    {brief.tone}
-                  </span>
-                )}
-              </div>
-
-              <div className="space-y-3 p-4 font-mono">
-                {/* Title & Meta */}
-                <Field label="Page Title">
-                  <p className="text-gray-800 text-sm font-medium font-sans">{brief.title}</p>
-                </Field>
-
-                <Divider />
-
-                <Field label="Meta Description">
-                  <p className="text-gray-700 text-sm font-sans">{brief.meta_description}</p>
-                </Field>
-
-                <Divider />
-
-                {/* Audience & Angle */}
-                <Field label="Target Audience">
-                  <p className="text-gray-700 text-sm font-sans">{brief.target_audience}</p>
-                </Field>
-
-                <Field label="Unique Angle">
-                  <p className="text-gray-700 text-sm font-sans">{brief.unique_angle}</p>
-                </Field>
-
-                <Divider />
-
-                {/* H2s */}
-                <Field label="H2 Headings">
-                  <ul className="space-y-1">
-                    {Array.isArray(brief.h2_headings) && brief.h2_headings.map((h, i) => (
-                      <li key={i} className="flex items-start gap-2 text-gray-700 text-sm font-sans">
-                        <span className="text-blue-400 font-mono text-xs mt-0.5 flex-shrink-0">H2</span>
-                        <span>{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Field>
-
-                <Divider />
-
-                {/* Content Gaps */}
-                {Array.isArray(brief.content_gaps) && brief.content_gaps.length > 0 && (
-                  <>
-                    <Field label="Content Gaps">
-                      <ul className="space-y-1">
-                        {brief.content_gaps.map((gap, i) => (
-                          <li key={i} className="flex items-start gap-2 text-gray-700 text-sm font-sans">
-                            <span className="text-orange-400 mt-0.5 flex-shrink-0">→</span>
-                            <span>{gap}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </Field>
-                    <Divider />
-                  </>
-                )}
-
-                {/* Internal Linking */}
-                {Array.isArray(brief.internal_linking_suggestions) && brief.internal_linking_suggestions.length > 0 && (
-                  <>
-                    <Field label="Internal Links">
-                      <ul className="space-y-1">
-                        {brief.internal_linking_suggestions.map((link, i) => (
-                          <li key={i} className="flex items-start gap-2 text-gray-700 text-sm font-sans">
-                            <span className="text-gray-400 mt-0.5 flex-shrink-0">↗</span>
-                            <span>{link}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </Field>
-                    <Divider />
-                  </>
-                )}
-
-                {/* CTA */}
-                {brief.cta_suggestion && (
-                  <Field label="CTA">
-                    <p className="text-gray-700 text-sm italic font-sans">"{brief.cta_suggestion}"</p>
-                  </Field>
-                )}
-
-                {/* Generate Article Button */}
-                <div className="pt-2">
-                  <button
-                    onClick={handleGenerateArticle}
-                    disabled={generating}
-                    className="w-full font-mono bg-gray-900 hover:bg-gray-800 text-white py-2 rounded text-sm font-medium disabled:opacity-50 transition-colors"
-                  >
-                    {generating ? (
-                      <span className="inline-flex items-center justify-center gap-2">
-                        <Spinner className="h-3 w-3 text-white" />
-                        Generating article…
-                      </span>
-                    ) : (
-                      'Generate Full Article'
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
+            <Brief
+              brief={brief}
+              onGenerate={handleGenerateArticle}
+              generating={generating}
+            />
           )}
 
-          {/* Article Output */}
-          {article && (
-            <div className="bg-white rounded border border-gray-200 shadow-sm p-4 relative">
-              <CopyButton text={article} />
-              <h2 className="text-sm font-medium text-gray-900 mb-3 font-mono tracking-tight">Publish-ready SEO article:</h2>
-              <div className="prose prose-sm max-w-none text-gray-700 [&_p]:text-sm [&_p]:leading-6 [&_p]:mb-3 
-                [&_h1]:text-xl [&_h1]:font-bold [&_h1]:mb-2 [&_h1]:mt-4 [&_h2]:text-lg 
-                [&_h2]:font-semibold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-md [&_h3]:font-medium [&_h3]:mt-4 
-                [&_h3]:mb-3 [&_ul]:text-sm [&_ul]:pl-8 [&_ul]:mb-3 [&_li]:mb-2 [&_li]:text-sm [&_li]:leading-6">
-                <ReactMarkdown>{article}</ReactMarkdown>
-              </div>
-            </div>
-          )}
-
+          {/* Article */}
+          {article && <Article article={article} />}
         </div>
       </main>
     </div>
-  )
+  );
 }
 
+// ───── Brief ─────
+function Brief({ brief, onGenerate, generating }) {
+  return (
+    <div style={{ marginTop: 56, position: "relative" }}>
+      <CopyButton text={JSON.stringify(brief, null, 2)} />
+
+      <Label>Page title</Label>
+      <h2
+        style={{
+          margin: "6px 0 0",
+          fontSize: 44,
+          fontWeight: 400,
+          letterSpacing: "-0.035em",
+          lineHeight: 1.06,
+          color: "var(--ink)",
+        }}
+      >
+        {brief.title}
+      </h2>
+
+      {brief.meta_description && (
+        <p
+          style={{
+            margin: "20px 0 0",
+            fontSize: 17,
+            color: "var(--ink-2)",
+            lineHeight: 1.55,
+            letterSpacing: "-0.005em",
+            maxWidth: 640,
+          }}
+        >
+          {brief.meta_description}
+        </p>
+      )}
+
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 20 }}>
+        {brief.search_intent && <Pill accent>{brief.search_intent}</Pill>}
+        {brief.word_count && <Pill>~{brief.word_count} words</Pill>}
+        {brief.tone && <Pill>{brief.tone}</Pill>}
+      </div>
+
+      {/* Outline */}
+      {Array.isArray(brief.h2_headings) && brief.h2_headings.length > 0 && (
+        <section style={{ marginTop: 56 }}>
+          <SectionHead
+            title="Outline"
+            meta={`${brief.h2_headings.length} sections`}
+          />
+          <div style={{ borderTop: "1px solid var(--line)" }}>
+            {brief.h2_headings.map((h, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "40px 1fr",
+                  alignItems: "baseline",
+                  gap: 16,
+                  padding: "18px 0",
+                  borderBottom: "1px solid var(--line)",
+                }}
+              >
+                <span
+                  className="mono"
+                  style={{ color: "var(--mute-2)", fontSize: 12 }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span
+                  style={{
+                    fontSize: 17,
+                    color: "var(--ink)",
+                    letterSpacing: "-0.015em",
+                    lineHeight: 1.35,
+                  }}
+                >
+                  {h}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Audience + Angle */}
+      {(brief.target_audience || brief.unique_angle) && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 48,
+            marginTop: 56,
+          }}
+        >
+          {brief.target_audience && (
+            <div>
+              <Label>Audience</Label>
+              <p
+                style={{
+                  margin: "8px 0 0",
+                  fontSize: 15,
+                  color: "var(--ink-2)",
+                  lineHeight: 1.55,
+                  letterSpacing: "-0.005em",
+                }}
+              >
+                {brief.target_audience}
+              </p>
+            </div>
+          )}
+          {brief.unique_angle && (
+            <div>
+              <Label>Unique angle</Label>
+              <p
+                style={{
+                  margin: "8px 0 0",
+                  fontSize: 15,
+                  color: "var(--ink-2)",
+                  lineHeight: 1.55,
+                  letterSpacing: "-0.005em",
+                }}
+              >
+                {brief.unique_angle}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Content gaps */}
+      {Array.isArray(brief.content_gaps) && brief.content_gaps.length > 0 && (
+        <section style={{ marginTop: 56 }}>
+          <SectionHead title="Content gaps" />
+          <ul style={{ margin: "20px 0 0", padding: 0, listStyle: "none" }}>
+            {brief.content_gaps.map((g, i) => (
+              <li
+                key={i}
+                style={{
+                  display: "flex",
+                  gap: 14,
+                  padding: "10px 0",
+                  fontSize: 15,
+                  color: "var(--ink-2)",
+                  lineHeight: 1.55,
+                  letterSpacing: "-0.005em",
+                }}
+              >
+                <span style={{ color: "var(--accent)", flexShrink: 0 }}>→</span>
+                <span>{g}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Internal links */}
+      {Array.isArray(brief.internal_linking_suggestions) &&
+        brief.internal_linking_suggestions.length > 0 && (
+          <section style={{ marginTop: 48 }}>
+            <SectionHead title="Internal links" />
+            <ul
+              className="mono"
+              style={{ margin: "20px 0 0", padding: 0, listStyle: "none" }}
+            >
+              {brief.internal_linking_suggestions.map((l, i) => (
+                <li
+                  key={i}
+                  style={{
+                    display: "flex",
+                    gap: 12,
+                    padding: "6px 0",
+                    fontSize: 13,
+                    color: "var(--ink-2)",
+                  }}
+                >
+                  <span style={{ color: "var(--mute-2)" }}>↗</span>
+                  <span>{l}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+      {/* CTA */}
+      {brief.cta_suggestion && (
+        <section style={{ marginTop: 56 }}>
+          <Label>Suggested CTA</Label>
+          <p
+            className="serif"
+            style={{
+              margin: "12px 0 0",
+              fontSize: 26,
+              fontStyle: "italic",
+              lineHeight: 1.3,
+              color: "var(--ink)",
+              letterSpacing: "-0.01em",
+              maxWidth: 640,
+            }}
+          >
+            "{brief.cta_suggestion}"
+          </p>
+        </section>
+      )}
+
+      {/* Generate article */}
+      <div
+        style={{
+          marginTop: 56,
+          paddingTop: 32,
+          borderTop: "1px solid var(--line)",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 24,
+          flexWrap: "wrap",
+        }}
+      >
+        <div>
+          <div
+            style={{
+              fontSize: 16,
+              fontWeight: 500,
+              color: "var(--ink)",
+              letterSpacing: "-0.015em",
+            }}
+          >
+            Brief looks good. Generate the article?
+          </div>
+          <div
+            className="mono"
+            style={{ fontSize: 12, color: "var(--mute)", marginTop: 4 }}
+          >
+            ~40s · powered by Gemini 2.5
+          </div>
+        </div>
+        <button
+          onClick={onGenerate}
+          disabled={generating}
+          style={{
+            background: "var(--ink)",
+            color: "var(--bg)",
+            border: "none",
+            padding: "12px 22px",
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 500,
+            cursor: "pointer",
+            letterSpacing: "-0.01em",
+            whiteSpace: "nowrap",
+            opacity: generating ? 0.5 : 1,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          {generating ? (
+            <>
+              <Spinner /> Generating article…
+            </>
+          ) : (
+            "Generate full article →"
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ───── Article ─────
+function Article({ article }) {
+  return (
+    <section
+      style={{
+        marginTop: 80,
+        paddingTop: 32,
+        borderTop: "1px solid var(--line)",
+        position: "relative",
+      }}
+    >
+      <CopyButton text={article} />
+      <div
+        className="mono"
+        style={{
+          fontSize: 11,
+          color: "var(--mute)",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+        }}
+      >
+        Draft · ready to publish
+      </div>
+      <div className="article-prose" style={{ marginTop: 16 }}>
+        <ReactMarkdown>{article}</ReactMarkdown>
+      </div>
+    </section>
+  );
+}
+
+// ───── Atoms ─────
 function Header() {
   return (
-    <header className="border-b border-gray-200 bg-white shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-2  py-1 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="text-lg font-mono font-bold text-gray-900 tracking-tighter">⌨</div>
-          <span className="text-sm font-mono font-bold text-gray-900 tracking-tight">microgen</span>
-        </div>
-        {/* <p className="text-xs text-gray-500">SEO Brief Generator</p> */}
-      </div>
+    <header
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "20px 32px",
+      }}
+    >
+      <Wordmark />
+      <nav
+        style={{
+          display: "flex",
+          gap: 28,
+          fontSize: 14,
+          color: "var(--ink-2)",
+          whiteSpace: "nowrap",
+        }}
+      >
+        <Link href="/examples">Examples</Link>
+        <Link href="/pricing">Pricing</Link>
+      </nav>
     </header>
-  )
+  );
 }
 
-// Small reusable components
-function Field({ label, children }) {
+function Wordmark() {
   return (
-    <div>
-      <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 tracking-wider">{label}</h3>
+    <Link
+      href="/"
+      style={{ display: "inline-flex", alignItems: "center", gap: 9 }}
+    >
+      <Logo />
+      <span
+        style={{
+          fontWeight: 500,
+          fontSize: 15,
+          letterSpacing: "-0.025em",
+          color: "var(--ink)",
+        }}
+      >
+        microgen
+      </span>
+    </Link>
+  );
+}
+
+function Logo({ size = 22 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <rect
+        x="2.5"
+        y="4.5"
+        width="19"
+        height="15"
+        rx="2.5"
+        stroke="var(--ink)"
+        strokeWidth="1.4"
+      />
+      <rect x="5" y="7" width="3" height="2" rx="0.5" fill="var(--ink)" />
+      <rect x="9" y="7" width="3" height="2" rx="0.5" fill="var(--ink)" />
+      <rect x="13" y="7" width="3" height="2" rx="0.5" fill="var(--ink)" />
+      <rect x="17" y="7" width="2" height="2" rx="0.5" fill="var(--accent)" />
+      <rect x="5" y="10.5" width="14" height="2" rx="0.5" fill="var(--ink)" />
+      <rect x="5" y="14" width="9" height="2" rx="0.5" fill="var(--ink)" />
+    </svg>
+  );
+}
+
+function Pill({ children, accent }) {
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "5px 11px",
+        borderRadius: 999,
+        fontSize: 12,
+        fontWeight: 500,
+        whiteSpace: "nowrap",
+        letterSpacing: "-0.005em",
+        background: accent ? "var(--accent-soft)" : "var(--paper)",
+        color: accent ? "var(--accent)" : "var(--ink-2)",
+        border: accent ? "1px solid transparent" : "1px solid var(--line)",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function Label({ children }) {
+  return (
+    <div
+      className="mono"
+      style={{
+        fontSize: 10,
+        color: "var(--mute)",
+        letterSpacing: "0.1em",
+        textTransform: "uppercase",
+      }}
+    >
       {children}
     </div>
-  )
+  );
 }
 
-function Divider() {
-  return <hr className="border-gray-100 my-2" />
-}
-
-function Spinner({ className = 'h-3 w-3 text-white' }) {
+function SectionHead({ title, meta }) {
   return (
-    <svg className={`${className} animate-spin`} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+    <div
+      style={{
+        display: "flex",
+        alignItems: "baseline",
+        justifyContent: "space-between",
+      }}
+    >
+      <h3
+        style={{
+          margin: 0,
+          fontSize: 18,
+          fontWeight: 500,
+          color: "var(--ink)",
+          letterSpacing: "-0.015em",
+        }}
+      >
+        {title}
+      </h3>
+      {meta && (
+        <span className="mono" style={{ fontSize: 11, color: "var(--mute)" }}>
+          {meta}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function Spinner() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      style={{ animation: "spin 1s linear infinite" }}
+      aria-hidden="true"
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="3"
+        opacity="0.25"
+      />
+      <path
+        d="M4 12a8 8 0 0 1 8-8"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </svg>
-  )
+  );
 }
 
 function CopyButton({ text }) {
-  const [copied, setCopied] = useState(false)
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
+  const [copied, setCopied] = useState(false);
   return (
     <button
-      onClick={handleCopy}
-      className="absolute top-1 right-1 p-2 bg-white rounded text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-      title={copied ? 'Copied!' : 'Copy to clipboard'}
-      aria-label="Copy to clipboard"
+      onClick={() => {
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      }}
+      className="mono"
+      style={{
+        position: "absolute",
+        top: 0,
+        right: 0,
+        padding: "6px 10px",
+        fontSize: 11,
+        background: "var(--paper)",
+        color: "var(--mute)",
+        border: "1px solid var(--line)",
+        borderRadius: 6,
+        cursor: "pointer",
+        letterSpacing: "0.02em",
+      }}
+      aria-label="Copy"
     >
-      {copied ? (
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-        </svg>
-      ) : (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-        </svg>
-      )}
+      {copied ? "✓ Copied" : "Copy"}
     </button>
-  )
+  );
 }
