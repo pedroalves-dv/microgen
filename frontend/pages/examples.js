@@ -69,8 +69,8 @@ export default function Examples() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
 
-      <main style={{ flex: 1, padding: '48px 32px 96px' }}>
-        <div style={{ maxWidth: 760, margin: '0 auto' }}>
+      <main className="page-main-lg">
+        <div className="page-content">
 
           {/* Hero */}
           <div style={{ marginBottom: 72 }}>
@@ -78,9 +78,9 @@ export default function Examples() {
               fontSize: 11, color: 'var(--mute)', letterSpacing: '0.1em',
               textTransform: 'uppercase', marginBottom: 20,
             }}>Example output</div>
-            <h1 style={{
-              margin: 0, fontSize: 56, fontWeight: 400,
-              letterSpacing: '-0.04em', lineHeight: 1.0, color: 'var(--ink)',
+            <h1 className="page-h1" style={{
+              fontWeight: 400,
+              letterSpacing: '-0.04em', color: 'var(--ink)',
             }}>
               What microgen<br/>
               <span className="serif" style={{ fontStyle: 'italic' }}>actually produces.</span>
@@ -221,9 +221,8 @@ function Pill({ children, accent }) {
 
 function Header() {
   return (
-    <header style={{
+    <header className="page-header" style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      padding: '20px 32px',
     }}>
       <Wordmark />
       <nav style={{ display: 'flex', gap: 28, fontSize: 14, color: 'var(--ink-2)', whiteSpace: 'nowrap' }}>

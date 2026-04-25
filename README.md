@@ -2,11 +2,12 @@
 
 This project is a minimal FastAPI backend and Next.js frontend that uses the Google Gemini model (`gemini-2.5-flash`) via the `google-generativeai` Python SDK to generate structured SEO content briefs from a keyword.
 
-Project layout
+Project layout:
+
 - backend/: FastAPI app
 - frontend/: Next.js + Tailwind UI
 
-Quick start
+Quick start:
 
 1) Backend
 
@@ -18,24 +19,42 @@ uvicorn backend.main:app --reload --port 8000
 
 cd /home/sang/projects/microgen/backend
 
-# Create and activate the venv
+## Create and activate the venv
+
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
 
-# Install dependencies
+## Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-# Start the server
+## Start the server
+
+### Backend
+
+```bash
 uvicorn main:app --reload
+```
 
 Next time you come back, you only need to re-activate it (the install step is one-time):
 
-
+```bash
 cd /home/sang/projects/microgen/backend
 source venv/bin/activate
 uvicorn main:app --reload
+```
 
-2) Frontend
+to deactivate venv in a terminal:
+
+```bash
+deactivate
+```
+
+### Frontend
 
 ```bash
 cd frontend
@@ -44,6 +63,7 @@ npm run dev
 # open http://localhost:3000
 ```
 
-Notes
+Notes:
+
 - The backend loads the `GEMINI_API_KEY` from the root `.env` using `python-dotenv`.
 - The frontend calls `http://localhost:8000/api/brief` — make sure the backend runs on port 8000.

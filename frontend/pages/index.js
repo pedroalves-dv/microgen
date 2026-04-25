@@ -59,11 +59,12 @@ export default function Home() {
     >
       <Header />
 
-      <main style={{ flex: 1, padding: "40px 32px 80px" }}>
-        <div style={{ maxWidth: 760, margin: "0 auto" }}>
+      <main className="page-main">
+        <div className="page-content">
           {/* Prompt input */}
           <form onSubmit={handleSubmit}>
             <div
+              className="search-form-inner"
               style={{
                 display: "flex",
                 gap: 10,
@@ -158,10 +159,8 @@ export default function Home() {
                 SEO content engine
               </div>
               <h1
+                className="hero-h1"
                 style={{
-                  margin: 0,
-                  fontSize: 84,
-                  lineHeight: 0.94,
                   letterSpacing: "-0.05em",
                   fontWeight: 400,
                   color: "var(--ink)",
@@ -281,12 +280,11 @@ function Brief({ brief, onGenerate, generating }) {
 
       <Label>Page title</Label>
       <h2
+        className="brief-title"
         style={{
           margin: "6px 0 0",
-          fontSize: 44,
           fontWeight: 400,
           letterSpacing: "-0.035em",
-          lineHeight: 1.06,
           color: "var(--ink)",
         }}
       >
@@ -311,8 +309,26 @@ function Brief({ brief, onGenerate, generating }) {
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 20 }}>
         {brief.search_intent && <Pill accent>{brief.search_intent}</Pill>}
         {brief.word_count && <Pill>~{brief.word_count} words</Pill>}
-        {brief.tone && <Pill>{brief.tone}</Pill>}
       </div>
+      {brief.tone && (
+        <p
+          className="mono"
+          style={{
+            margin: "10px 0 0",
+            fontSize: 12,
+            color: "var(--mute)",
+            lineHeight: 1.6,
+            letterSpacing: "-0.005em",
+            maxWidth: "100%",
+            // border: "1px solid var(--line)",
+            // padding: "4px 10px",
+            // borderRadius: 16,
+            // display: "inline-block",
+          }}
+        >
+          {brief.tone}
+        </p>
+      )}
 
       {/* Outline */}
       {Array.isArray(brief.h2_headings) && brief.h2_headings.length > 0 && (
@@ -358,14 +374,7 @@ function Brief({ brief, onGenerate, generating }) {
 
       {/* Audience + Angle */}
       {(brief.target_audience || brief.unique_angle) && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 48,
-            marginTop: 56,
-          }}
-        >
+        <div className="two-col-grid" style={{ marginTop: 56 }}>
           {brief.target_audience && (
             <div>
               <Label>Audience</Label>
@@ -574,11 +583,11 @@ function Article({ article }) {
 function Header() {
   return (
     <header
+      className="page-header"
       style={{
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "20px 32px",
       }}
     >
       <Wordmark />

@@ -77,8 +77,8 @@ export default function Pricing() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
 
-      <main style={{ flex: 1, padding: '48px 32px 96px' }}>
-        <div style={{ maxWidth: 760, margin: '0 auto' }}>
+      <main className="page-main-lg">
+        <div className="page-content">
 
           {/* Hero */}
           <div style={{ marginBottom: 64 }}>
@@ -86,9 +86,9 @@ export default function Pricing() {
               fontSize: 11, color: 'var(--mute)', letterSpacing: '0.1em',
               textTransform: 'uppercase', marginBottom: 20,
             }}>Pricing</div>
-            <h1 style={{
-              margin: 0, fontSize: 56, fontWeight: 400,
-              letterSpacing: '-0.04em', lineHeight: 1.0, color: 'var(--ink)',
+            <h1 className="page-h1" style={{
+              fontWeight: 400,
+              letterSpacing: '-0.04em', color: 'var(--ink)',
             }}>
               Simple plans.<br/>
               <span className="serif" style={{ fontStyle: 'italic' }}>No surprises.</span>
@@ -102,7 +102,7 @@ export default function Pricing() {
           </div>
 
           {/* Tiers */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div className="tier-list">
             {TIERS.map((tier, i) => (
               <TierRow key={i} tier={tier} />
             ))}
@@ -116,10 +116,9 @@ export default function Pricing() {
             }}>Common questions</h2>
             <div style={{ borderTop: '1px solid var(--line)' }}>
               {FAQ.map((item, i) => (
-                <div key={i} style={{
+                <div key={i} className="two-col-grid" style={{
                   padding: '28px 0',
                   borderBottom: '1px solid var(--line)',
-                  display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48,
                 }}>
                   <p style={{
                     margin: 0, fontSize: 16, fontWeight: 500,
@@ -142,13 +141,9 @@ export default function Pricing() {
 
 function TierRow({ tier }) {
   return (
-    <div style={{
+    <div className="tier-row-grid" style={{
       padding: '32px 0',
       borderBottom: '1px solid var(--line)',
-      display: 'grid',
-      gridTemplateColumns: '180px 1fr auto',
-      gap: 48,
-      alignItems: 'start',
       ...(tier.accent ? {
         background: 'var(--paper)',
         borderRadius: 12,
@@ -224,9 +219,8 @@ function TierRow({ tier }) {
 
 function Header() {
   return (
-    <header style={{
+    <header className="page-header" style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      padding: '20px 32px',
     }}>
       <Wordmark />
       <nav style={{ display: 'flex', gap: 28, fontSize: 14, color: 'var(--ink-2)', whiteSpace: 'nowrap' }}>
